@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>	
+		Urlcf URL shortener
+	</title>
+	<link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAREAEQAAAAARERARAAAAABEBEBEQAAAAEQAAERAAAAARARARAAAAABEREBERAAAAAREAEREAAAAAAAAAAAAAEREAEQABERERERARAAERERABEBEAARABEAEQEQABEAEQARAREQEQARABEBERARABEAEQEQABEAAAAAAAAAAADxnwAA4J8AAOSPAADnjwAA5J8AAOCHAADxhwAA//8AAIZwAAACcAAAMnMAADJzAAAyEwAAMhMAADJzAAD//wAA">
+	<style>
+
+#main {
+  margin: 3% 0 0 3%;
+}
+
+	</style>
+	<script>
+
+var $ = document.querySelector.bind(document);
+var backEndLink = "/put?url={url}";
+
+function compressURL() {
+	let url = document.forms.add.url.value;
+
+	if (!url) {
+		alert("Please, enter an URL.");
+		return;
+	}
+
+	let link = backEndLink.format({url: encodeURIComponent(url)});
+	let data = {};
+	let opener = new XMLHttpRequest();
+	opener.open("PUT", link, true);
+	opener.onreadystatechange = function () {
+		if (opener.readyState == 4) {
+			if (opener.status == 200) {
+				data = JSON.parse(opener.responseText);
+			}
+			handleResult(data, opener.status);
+		}
+	};
+	opener.send(null);
+
+}
+
+function handleResult(data, status) {
+	switch (status) {
+		case 200:
+			showURL(data);
+			break;
+		case 400:
+			alert("Ooops!\nError code - 400.");
+			break;
+		default:
+			alert("Server is not responding.");
+	}
+}
+
+function showURL(data) {
+	let urls = $("#urls");
+	
+	let li = document.createElement("li");
+
+	let url0 = li.appendChild(document.createElement("a"));
+	url0.href = data.url;
+	url0.appendChild(document.createTextNode(data.url));
+	
+	li.appendChild(document.createElement("br"));
+
+	let redirect = "{origin}/{uid}".format({
+		origin: location.origin,
+		uid: data.uid
+	});
+
+	let url1 = li.appendChild(document.createElement("a"));
+	url1.href = redirect;
+	url1.appendChild(document.createTextNode(redirect));
+	
+	urls.appendChild(li);
+}
+
+String.prototype.format = function (desc) {
+	return this.replace(/\{(.*?)\}/g, (function (data, key) { return desc[key] || ""; }));
+};
+
+	</script>
+</head>
+<body onload="">
+	<div id="main">
+		<form name="add">
+			<b>Just paste an URL and push the button:</b>
+			<br><br>
+			<input type="text" name="url" placeholder="http://..." size="48"><br>
+			<input type="button" value="Compress URL" onclick="compressURL()" class="button">
+		</form>
+		<br>
+		<ul id="urls"></ul>
+	</div>
+</body>
+</html>

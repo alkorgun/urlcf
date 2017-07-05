@@ -1,0 +1,76 @@
+#!/usr/bin/python2
+
+import argparse
+import errno
+import os
+import sys
+
+from urlcf.service import UrlcfService
+
+CMD_START   = "start"
+CMD_STATUS  = "status"
+CMD_STOP    = "stop"
+# CMD_RELOAD  = "reload"
+# CMD_RESTART = "restart"
+
+
+def get_pid(pid_file=UrlcfService.pid_file):
+    if not os.path.exists(pid_file):
+        return None
+    with open(pid_file) as fp:
+        pid = fp.read()
+    try:
+        pid = int(pid.strip())
+    except ValueError:
+        os.remove(pid_file)
+        return None
+    try:
+        os.kill(pid, 0)
+    except OSError as e:
+        if e.errno != errno.EPERM:
+            return None
+    return pid
+
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser(description="urlcf")
+    p.add_argument(
+        "command",
+        default=CMD_STATUS,
+        choices=[
+            CMD_START,
+            CMD_STATUS,
+            CMD_STOP
+        ]
+    )
+
+    args = p.parse_args()
+
+    if args.command == CMD_START:
+        if get_pid():
+            print("service is already running.")
+            sys.exit(0)
+
+        service = UrlcfService()
+
+        try:
+            service.start()
+        except Exception:
+            print("failure.")
+            sys.exit(1)
+    elif args.command == CMD_STATUS:
+        if get_pid():
+            print("service is running.")
+        else:
+            print("service is down.")
+    elif args.command == CMD_STOP:
+        pid = get_pid()
+        if not pid:
+            print("service is down already.")
+            sys.exit(0)
+        try:
+            os.kill(pid, 9)
+        except OSError as e:
+            if e.errno == errno.EPERM:
+                print("you have no power here.")
+                sys.exit(1)
