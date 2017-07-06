@@ -12,15 +12,27 @@ Runs on 80 with index on /.
 
 apt-get install python-flask python-sqlalchemy
 
-tar fx urlcf.tar
+wget -O urlcf.zip https://codeload.github.com/alkorgun/urlcf/zip/master
 
-cd urlcf
+unzip urlcf.zip
+
+rm urlcf.zip
+
+cd urlcf-master
 
 python setup.py install
 
 ```
 
-* Run.
+* Test on **8080**.
+
+```bash
+
+urlcf-run8080
+
+```
+
+* Run as service.
 
 ```bash
 
@@ -33,5 +45,17 @@ service urlcf start
 ```bash
 
 update-rc.d urlcf defaults
+
+```
+
+* Build **DEB**.
+
+```bash
+
+apt-get install python-stdeb
+
+cd urlcf-master
+
+./build_deb.sh
 
 ```
