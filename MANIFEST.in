@@ -1,4 +1,3 @@
-recursive-include init.d *
 recursive-include html *
-include urlcf-run
-include urlcf.cgi
+recursive-include init.d *
+recursive-include scripts *

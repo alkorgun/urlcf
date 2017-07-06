@@ -31,6 +31,14 @@ def ls(folder):
     return files
 
 
+files = {
+    "/etc/init.d": ["init.d/urlcf"],
+    "/usr/bin": ["scripts/urlcf-run8080"],
+    "/usr/lib/cgi-bin": ["scripts/urlcf.cgi"],
+    "/var/lib/urlcf/html": ls("html")
+}
+
+
 if __name__ == "__main__":
     setup(
         name=name,
@@ -46,11 +54,9 @@ if __name__ == "__main__":
             "sqlalchemy"
         ],
 
-        data_files=[
-            ("/etc/init.d", ["init.d/urlcf"]),
-            ("/usr/lib/cgi-bin", ["urlcf.cgi"]),
-            ("/var/lib/urlcf/html", ls("html"))
-        ],
+        data_files=files.items(),
 
-        cmdclass={"install": Initializer}
+        cmdclass={
+            "install": Initializer
+        }
     )

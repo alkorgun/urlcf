@@ -12,7 +12,7 @@ from .wsgi import app
 
 class UrlcfService(object):
 
-    pid_file = "/tmp/urlsf-service.pid"
+    pid_file = "/var/run/urlcf-service.pid"
 
     default_pipe = "/dev/null"
     default_folder = "/tmp"
@@ -23,7 +23,7 @@ class UrlcfService(object):
         """
         pid = os.fork()
         if pid:
-            sys.exit(2)
+            sys.exit(0)
 
         os.setsid()
         os.chdir(self.default_folder)
@@ -31,7 +31,7 @@ class UrlcfService(object):
 
         pid = os.fork()
         if pid:
-            sys.exit(2)
+            sys.exit(0)
 
         sys.stdout.flush()
         sys.stderr.flush()
