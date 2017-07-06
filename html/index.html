@@ -21,6 +21,8 @@ var backEndLink = "/put?url={url}";
 function compressURL() {
 	let url = document.forms.add.url.value;
 
+	document.forms.add.url.value = "";
+
 	if (!url) {
 		alert("Please, enter an URL.");
 		return;
